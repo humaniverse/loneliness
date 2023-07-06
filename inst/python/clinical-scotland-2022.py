@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 import scipy.stats as stats
 
-# Load loneliness related illness and medication data
+# Load loneliness related condition and medication data
 drug_data = pd.read_csv("inst/extdata/drug_list.csv")
 
 # URLs to Prescription in the Community csv files
@@ -38,7 +38,7 @@ col_items = "NumberOfPaidItems"
 
 def code_illness(df):
     """
-    Takes in a prescription dataframe and identifies loneliness related illnesses based on prescription.
+    Takes in the prescription in the community dataframe and identifies loneliness related conditions based on prescription.
     Outputs a dataframe that multiplies loneliness related prescriptions by its count.
     Function is called in count_illness().
     """
@@ -181,13 +181,13 @@ def illness_percentage(data):
 
     # Overall percentage for loneliness realted disease prescribing out of total drugs prescribed
     data["loneliness_perc"] = data["loneliness"].divide(data[col_items], axis=0) * 100
-    print(f"Percentage calculations added")
+    print("Percentage calculations added")
     return data
 
 
 def standardise(data):
     """
-    Creates new columns that calculates the z-score per illness.
+    Creates new columns that calculates the z-score per illness to standardise prescription relative to other practices.
     Creates a new column that sums each illness' z-score to compute a loneliness score.
     Creates a new column that ranks each postcode's loneliness score.
     Creates a new column that puts scores into deciles.
@@ -232,7 +232,7 @@ def standardise(data):
 
 def save_dataframe(data):
     """
-    Saves dataframe in extdata folder as csv
+    Saves dataframe in extdata/ as csv
     """
     data.to_csv("inst/extdata/clinical_scotland_2022.csv", index=False)
     print("Dataset saved as csv")
@@ -240,7 +240,7 @@ def save_dataframe(data):
 
 def build_scotland2022():
     """
-    Runs all functions required to build and save Scotland 2022 loneliness index in inst/extdata/folder.
+    Runs all functions required to build and save Scotland 2022 loneliness index in inst/extdata/.
     """
     df_illness = count_illness()
     df_illness_postcode = add_postcode(df_illness)
