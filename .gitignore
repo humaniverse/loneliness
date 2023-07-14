@@ -54,3 +54,8 @@ rsconnect/
 # temporary working files
 cls.ods
 oac_lookup.csv
+
+# jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+
