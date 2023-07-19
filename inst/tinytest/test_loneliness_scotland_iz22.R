@@ -1,5 +1,5 @@
 library(geographr)
-library(sf)
+library(tidyverse)
 pkgload::load_all(".")
 
 # Load dataframe
@@ -29,9 +29,8 @@ expect_equal(
 
 # Test all Interzone codes are there
 scotland_iz_codes <-
-  boundaries_iz11 |> 
-  sf::st_drop_geometry() |>
-  select(iz11_code)
+  lookup_dz11_iz11_ltla20 |> 
+  distinct(iz11_code) 
 
 expect_equal(
   sort(loneliness_scotland_iz$iz_code11),
@@ -54,7 +53,10 @@ expect_equal(
   "numeric"
 )
 
-# Test unique ranks, from 1 to 1279. If tie: rank is average of values tied
+expect_equal(
+  sort(loneliness_scotland_iz$rank),
+  1:1279
+)
 
 # ---- Tests: Deciles ----
 # Test class
@@ -64,3 +66,23 @@ expect_equal(
 )
 
 # Test number of values per bin
+deciles <- loneliness_scotland_iz$deciles
+
+bin_count <- length(deciles)%/%10
+remainder <- length(deciles) %% 10
+
+expected_counts <- rep(bin_count, 10)
+expected_counts[1:remainder] <- expected_counts[1:remainder] + 1
+
+grouped_deciles <-
+  loneliness_scotland_iz |> 
+  group_by(deciles) |> 
+  summarise(n = n()) |> 
+  ungroup()
+
+actual_counts <- grouped_deciles$n
+
+expect_equal(
+  sort(expected_counts),
+  sort(actual_counts)
+)
