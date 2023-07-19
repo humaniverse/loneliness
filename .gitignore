@@ -55,11 +55,12 @@ rsconnect/
 *.ipynb_checkpoints
 
 # WIP files and data
-inst/extdata/oa.csv
 gp_data/
 mapping_data/
 prescriptions_scotland/
-proccessed_data.csv
+processed_data.csv
 processed_data_with_postcode.csv
 lookup_11.feather
 lookup_21.feather
+oac_lookup.csv
+cls.ods
