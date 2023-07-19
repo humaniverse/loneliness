@@ -9,9 +9,9 @@ iz <- boundaries_iz11 |>
 set.seed(123)
 
 dummy_scotland_loneliness <- tibble(
-  interzone = iz$iz11_name,
-  loneliness_zscore = rnorm(length(interzone)),
-  ranked = rank(loneliness_zscore),
+  iz_code11 = iz$iz11_code,
+  loneliness_zscore = rnorm(length(iz_code11)),
+  rank = rank(loneliness_zscore),
   deciles = ntile(loneliness_zscore, 10)
 )
 
