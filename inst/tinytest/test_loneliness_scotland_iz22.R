@@ -1,29 +1,29 @@
 library(geographr)
-library(tidyverse)
-pkgload::load_all(".")
+library(dplyr)
+
+# pkgload::load_all(".")
 
 # Load dataframe
 # Use dummy dataset for now; to be changed when actual data is pushed
-loneliness_scotland_iz <-
-  dummy_loneliness_scotland_iz22
+data(dummy_loneliness_scotland_iz22)
 
 # ---- Tests: Overall dataframe ----
 # Test its class as a tibble data frame
 expect_equal(
-  class(loneliness_scotland_iz)[1],
+  class(dummy_loneliness_scotland_iz22)[1],
   "tbl_df"
 )
 
 # Test its dimensions: 1279 interzones, and 4 columns
 expect_equal(
-  dim(loneliness_scotland_iz),
+  dim(dummy_loneliness_scotland_iz22),
   c(1279, 4)
 )
 
 # ---- Tests: Interzone ----
 # Test class
 expect_equal(
-  class(loneliness_scotland_iz$iz_code11),
+  class(dummy_loneliness_scotland_iz22$iz_code11),
   "character"
 )
 
@@ -33,25 +33,25 @@ scotland_iz_codes <-
   distinct(iz11_code)
 
 expect_equal(
-  sort(loneliness_scotland_iz$iz_code11),
+  sort(dummy_loneliness_scotland_iz22$iz_code11),
   sort(scotland_iz_codes$iz11_code)
 )
 
 # ---- Tests: Loneliness z-score ----
 # Test class
 expect_equal(
-  class(loneliness_scotland_iz$loneliness_zscore),
+  class(dummy_loneliness_scotland_iz22$loneliness_zscore),
   "numeric"
 )
 
 # Test all values fall within threshold of sd's (TBD)
-mean_loneliness <- mean(loneliness_scotland_iz$loneliness_zscore, na.rm = TRUE)
-threshold <- 4 * sd(loneliness_scotland_iz$loneliness_zscore, na.rm = TRUE)
+mean_loneliness <- mean(dummy_loneliness_scotland_iz22$loneliness_zscore, na.rm = TRUE)
+threshold <- 4 * sd(dummy_loneliness_scotland_iz22$loneliness_zscore, na.rm = TRUE)
 
 all_within_threshold <-
   all(
-    loneliness_scotland_iz$loneliness_zscore >= mean_loneliness - threshold &
-      loneliness_scotland_iz$loneliness_zscore <= mean_loneliness + threshold
+    dummy_loneliness_scotland_iz22$loneliness_zscore >= mean_loneliness - threshold &
+      dummy_loneliness_scotland_iz22$loneliness_zscore <= mean_loneliness + threshold
   )
 
 expect_true(all_within_threshold)
@@ -59,33 +59,33 @@ expect_true(all_within_threshold)
 # ---- Tests: Rank ----
 # Test class
 expect_equal(
-  class(loneliness_scotland_iz$rank),
+  class(dummy_loneliness_scotland_iz22$rank),
   "numeric"
 )
 
 expect_equal(
-  sort(loneliness_scotland_iz$rank),
+  sort(dummy_loneliness_scotland_iz22$rank),
   1:1279
 )
 
 # How to handle ties? Recompute ranks with same method to test actual ranks
 expected_ranks <-
-  rank(loneliness_scotland_iz$loneliness_zscore, ties.method = "average")
+  rank(dummy_loneliness_scotland_iz22$loneliness_zscore, ties.method = "average")
 
 expect_equal(
-  loneliness_scotland_iz$rank,
+  dummy_loneliness_scotland_iz22$rank,
   expected_ranks
 )
 
 # ---- Tests: Deciles ----
 # Test class
 expect_equal(
-  class(loneliness_scotland_iz$deciles),
+  class(dummy_loneliness_scotland_iz22$deciles),
   "integer"
 )
 
 # Test number of values per bin
-deciles <- loneliness_scotland_iz$deciles
+deciles <- dummy_loneliness_scotland_iz22$deciles
 
 bin_count <- length(deciles) %/% 10
 remainder <- length(deciles) %% 10
@@ -94,7 +94,7 @@ expected_counts <- rep(bin_count, 10)
 expected_counts[1:remainder] <- expected_counts[1:remainder] + 1
 
 grouped_deciles <-
-  loneliness_scotland_iz |>
+  dummy_loneliness_scotland_iz22 |>
   group_by(deciles) |>
   summarise(n = n()) |>
   ungroup()
