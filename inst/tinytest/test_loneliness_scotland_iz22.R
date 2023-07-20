@@ -68,6 +68,15 @@ expect_equal(
   1:1279
 )
 
+# How to handle ties? Recompute ranks with same method to test actual ranks
+expected_ranks <-
+  rank(loneliness_scotland_iz$loneliness_zscore, ties.method = "average")
+
+expect_equal(
+  loneliness_scotland_iz$rank,
+  expected_ranks
+)
+
 # ---- Tests: Deciles ----
 # Test class
 expect_equal(
