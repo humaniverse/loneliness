@@ -3,7 +3,7 @@ library(tidyverse)
 pkgload::load_all(".")
 
 # Load dataframe
-# For now, use dummy dataset, to be changed when data is pushed
+# Use dummy dataset for now; to be changed when actual data is pushed
 loneliness_scotland_iz <-
   dummy_loneliness_scotland_iz22
 
@@ -29,8 +29,8 @@ expect_equal(
 
 # Test all Interzone codes are there
 scotland_iz_codes <-
-  lookup_dz11_iz11_ltla20 |> 
-  distinct(iz11_code) 
+  lookup_dz11_iz11_ltla20 |>
+  distinct(iz11_code)
 
 expect_equal(
   sort(loneliness_scotland_iz$iz_code11),
@@ -44,7 +44,17 @@ expect_equal(
   "numeric"
 )
 
-# Test all values fall within threshold of sd's
+# Test all values fall within threshold of sd's (TBD)
+mean_loneliness <- mean(loneliness_scotland_iz$loneliness_zscore, na.rm = TRUE)
+threshold <- 4 * sd(loneliness_scotland_iz$loneliness_zscore, na.rm = TRUE)
+
+all_within_threshold <-
+  all(
+    loneliness_scotland_iz$loneliness_zscore >= mean_loneliness - threshold &
+      loneliness_scotland_iz$loneliness_zscore <= mean_loneliness + threshold
+  )
+
+expect_true(all_within_threshold)
 
 # ---- Tests: Rank ----
 # Test class
@@ -68,16 +78,16 @@ expect_equal(
 # Test number of values per bin
 deciles <- loneliness_scotland_iz$deciles
 
-bin_count <- length(deciles)%/%10
+bin_count <- length(deciles) %/% 10
 remainder <- length(deciles) %% 10
 
 expected_counts <- rep(bin_count, 10)
 expected_counts[1:remainder] <- expected_counts[1:remainder] + 1
 
 grouped_deciles <-
-  loneliness_scotland_iz |> 
-  group_by(deciles) |> 
-  summarise(n = n()) |> 
+  loneliness_scotland_iz |>
+  group_by(deciles) |>
+  summarise(n = n()) |>
   ungroup()
 
 actual_counts <- grouped_deciles$n
