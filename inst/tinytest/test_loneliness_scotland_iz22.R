@@ -1,9 +1,5 @@
-library(geographr)
-library(dplyr)
-
 # pkgload::load_all(".")
 
-# Load dataframe
 # Use dummy dataset for now; to be changed when actual data is pushed
 data(dummy_loneliness_scotland_iz22)
 
@@ -63,12 +59,7 @@ expect_equal(
   "numeric"
 )
 
-expect_equal(
-  sort(dummy_loneliness_scotland_iz22$rank),
-  1:1279
-)
-
-# How to handle ties? Recompute ranks with same method to test actual ranks
+# Compute ranks with same tie handling method to test actual ranks
 expected_ranks <-
   rank(dummy_loneliness_scotland_iz22$loneliness_zscore, ties.method = "average")
 
@@ -93,13 +84,7 @@ remainder <- length(deciles) %% 10
 expected_counts <- rep(bin_count, 10)
 expected_counts[1:remainder] <- expected_counts[1:remainder] + 1
 
-grouped_deciles <-
-  dummy_loneliness_scotland_iz22 |>
-  group_by(deciles) |>
-  summarise(n = n()) |>
-  ungroup()
-
-actual_counts <- grouped_deciles$n
+actual_counts <- as.vector(table(dummy_loneliness_scotland_iz22$deciles))
 
 expect_equal(
   sort(expected_counts),
