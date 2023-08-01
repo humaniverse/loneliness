@@ -2,6 +2,9 @@
 
 # Use dummy dataset for now; to be changed when actual data is pushed
 data(dummy_loneliness_scotland_iz22)
+scotland_iz_codes_path <- system.file("extdata", "scotland_iz_codes.csv", package = "loneliness", mustWork = TRUE)
+scotland_iz_codes <- read.csv(scotland_iz_codes_path)
+
 
 # ---- Tests: Overall dataframe ----
 # Test its class as a tibble data frame
@@ -24,10 +27,6 @@ expect_equal(
 )
 
 # Test all Interzone codes are there
-scotland_iz_codes <-
-  lookup_dz11_iz11_ltla20 |>
-  distinct(iz11_code)
-
 expect_equal(
   sort(dummy_loneliness_scotland_iz22$iz_code11),
   sort(scotland_iz_codes$iz11_code)
