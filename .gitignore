@@ -49,11 +49,11 @@ po/*~
 rsconnect/
 
 # lookup files
-*.feather
+#*.feather
 
 # temporary working files
-cls.ods
-oac_lookup.csv
+#cls.ods
+#oac_lookup.csv
 
 # jupyter notebook checkpoints
 .ipynb_checkpoints/
