@@ -58,4 +58,6 @@ rsconnect/
 # jupyter notebook checkpoints
 .ipynb_checkpoints/
 
+# venv files
+venv_loneliness/
 
