@@ -47,3 +47,17 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# lookup files
+#*.feather
+
+# temporary working files
+#cls.ods
+#oac_lookup.csv
+
+# jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# venv files
+venv_loneliness/
+
