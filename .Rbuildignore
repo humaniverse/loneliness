@@ -4,3 +4,6 @@
 venv_loneliness
 ^data-raw$
 ^\.github$
+^\.broadcast$
+^\.broadcast$
+^\.broadcast$
