@@ -2,3 +2,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 venv_loneliness
+^data-raw$
+^\.github$
