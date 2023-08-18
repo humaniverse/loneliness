@@ -49,15 +49,15 @@ po/*~
 rsconnect/
 
 # lookup files
-#*.feather
-
-# temporary working files
-#cls.ods
-#oac_lookup.csv
+*.feather
 
 # jupyter notebook checkpoints
 .ipynb_checkpoints/
 
 # venv files
 venv_loneliness/
+
+# Data files scraped
+pitc/
+gp_mapping/
 

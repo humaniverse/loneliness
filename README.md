@@ -13,7 +13,7 @@ development.
 ## Virtual Environments
 This project uses `requirements.txt` to manage Python package dependencies. 
 
-Instruction below to create and activate the virtual environment using Python's inbuilt `venv` module on Windows Command Line:
+Instruction below to create and activate the virtual environment using Python's inbuilt `venv` module:
 * Create a new virtual environment:
   - `python -m venv venv_loneliness`
 * Activate the virtual environment:
