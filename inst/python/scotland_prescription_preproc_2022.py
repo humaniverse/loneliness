@@ -237,9 +237,8 @@ def standardise(monthly_prescriptions_perc):
     per_cols = [
         "depression_perc",
         "alzheimers_perc",
-        "blood pressure_perc",
         "hypertension_perc",
-        "diabeties_perc",
+        "diabetes_perc",
         "cardiovascular disease_perc",
         "insomnia_perc",
         "addiction_perc",
@@ -256,9 +255,8 @@ def standardise(monthly_prescriptions_perc):
         [
             "depressionzscore",
             "alzheimerszscore",
-            "blood pressurezscore",
             "hypertensionzscore",
-            "diabetieszscore",
+            "diabeteszscore",
             "cardiovascular diseasezscore",
             "insomniazscore",
             "addictionzscore",
