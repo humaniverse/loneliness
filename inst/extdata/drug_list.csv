@@ -14,21 +14,24 @@ depression,clomipramine
 depression,imipramine
 depression,lofepramine
 depression,nortriptyline
+depression,buspirone
+depression,dosulepin
+depression,doxepin
+depression,flupentixol
+depression,isocarboxazid
+depression,mianserin
+depression,moclobemide
+depression,nortriptyline
+depression,paroxetine
+depression,phenelzine
+depression,pregablin
+depression,tranylcypromine
+depression,trazodone
+depression,trimipramine
 alzheimers,donepezil
 alzheimers,rivastigmine
 alzheimers,galantamine
-blood pressure,enalapril
-blood pressure,lisinopril
-blood pressure,perindopril
-blood pressure,ramipril
-blood pressure,candesartan
-blood pressure,irbesartan
-blood pressure,losartan
-blood pressure,valsartan
-blood pressure,olmesartan
-blood pressure,amlodipine
-blood pressure,felodipine
-blood pressure,nifedipine
+alzheimers,memantine
 hypertension,olmesartan
 hypertension,verapamil
 hypertension,perindopril
@@ -43,6 +46,15 @@ hypertension,felodipine
 hypertension,ramipril
 hypertension,valsartan
 hypertension,diltiazem
+hypertension,atenolol
+hypertension,bendroflumethiazide
+hypertension,hydralazine
+hypertension,hydrochlorothiazide
+hypertension,indapamide
+hypertension,labetalol
+hypertension,magnesium
+hypertension,methyldopa
+hypertension, bisoprolol
 diabeties,metformin
 cardiovascular disease,atorvastatin
 cardiovascular disease,fluvastatin
@@ -50,5 +62,10 @@ cardiovascular disease,pravastatin
 cardiovascular disease,rosuvastatin
 cardiovascular disease,simvastatin
 insomnia,zopiclone
+insomnia,zolpidem
+insomnia,melatonin
 addiction,methadone
+addiction,buprenorphine
 social anxiety,escitalopram
+social anxiety, sertraline
+social anxiety, paroxetine
