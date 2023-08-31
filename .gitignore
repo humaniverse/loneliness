@@ -60,4 +60,11 @@ venv_loneliness/
 # Data files scraped
 pitc/
 gp_mapping/
+gp_data_ni/
+prescriptions_ni/
+
+# Temp working files
+monthly_prescriptions_postcodes.csv
+monthly_prescriptions.csv
+
 
