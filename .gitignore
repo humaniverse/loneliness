@@ -68,5 +68,6 @@ pitc_ni/
 # Temp working files
 monthly_prescriptions_postcodes.csv
 monthly_prescriptions.csv
+monthly_prescriptions_perc.csv
 
 
