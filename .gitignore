@@ -61,7 +61,9 @@ venv_loneliness/
 pitc/
 gp_mapping/
 gp_data_ni/
+gp_details_ni/
 prescriptions_ni/
+pitc_ni/
 
 # Temp working files
 monthly_prescriptions_postcodes.csv
