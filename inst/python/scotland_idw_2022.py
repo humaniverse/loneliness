@@ -145,6 +145,7 @@ def create_grid(gp_geo):
     xmax_coords = gp_geo["oseast1m"].max()
     ymin_coords = gp_geo["osnrth1m"].min()
     ymax_coords = gp_geo["osnrth1m"].max()
+    # 250 = 250m x250m on BNG
     cellsize = 250
 
     # Adjust x and y ranges to be perfectly divisible by cellsize using floor and ceiling division, ensuring even spacing
@@ -218,7 +219,10 @@ def map_scores_to_iz(xmin, ymax, scores_reshaped):
     # Project coordinates onto British National Grid
     iz_coords.to_crs({"init": "epsg:27700"})
 
-    # Define transformation to map row and columns from IDW model estimates to spatial coordinates
+    # Define transformation to project row and columns from IDW model estimates to BNG coordinates
+    # +/-250 is cellsize; reflects upper and lower left origin in the array
+    # xmin, ymax is the amount needed to shift an origin (0,0) to line up with BNG projection
+    # 125 is padding (half of 250) to ensure cells are centred over starting boundaries
     trans = rst.Affine.from_gdal(xmin - 125, 250, 0, ymax + 125, 0, -250)
 
     # Get the mean predicted score based on MSOA polygon shape, returns a dictionary
