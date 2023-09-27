@@ -304,4 +304,4 @@ if __name__ == "__main__":
     # add_postcode()
     # illness_percentage()
     # standardise()
-    # build_preproc_scotland_2022()
+    build_preproc_scotland_2022()
