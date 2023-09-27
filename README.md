@@ -7,7 +7,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 <!-- badges: end -->
 
 ## Overview
-**Currenty under active development**
+**Currently under active development**
 
 A loneliness prescription index for the UK. 
 
