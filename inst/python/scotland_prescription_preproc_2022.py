@@ -62,14 +62,14 @@ def code_condition(df):
 
 def count_condition():
     """
-    Downloads each month of the prescription in the community CSV into a inst/extdata/pitc/
+    Downloads each month of the prescription in the community CSV into a inst/extdata/pitc_scotland/
     Iterates over the monthly prescribing data to output an aggregated dataframe that sums number of prescriptions by illness type.
     Dataframe is grouped by GP practice.
     Runs code_condition().
     """
 
     # Download prescribing data into inst/extdata/pitc/ folder
-    destination_folder = "inst/extdata/pitc"
+    destination_folder = "inst/extdata/pitc_scotland"
     os.makedirs(
         destination_folder, exist_ok=True
     )  # Create the destination folder if it doesn't exist
@@ -131,7 +131,7 @@ def add_postcode(monthly_prescriptions):
     # monthly_prescriptions = pd.read_csv("monthly_prescriptions.csv")
 
     # Download GP contact details data into inst/extdata/gp_details/ folder
-    destination_folder = "inst/extdata/gp_details"
+    destination_folder = "inst/extdata/gp_details_scotland"
     os.makedirs(
         destination_folder, exist_ok=True
     )  # Create the destination folder if it doesn't exist

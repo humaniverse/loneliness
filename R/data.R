@@ -16,3 +16,20 @@
 #' }
 #' @source \url{https://www.gov.uk/government/statistical-data-sets/dcms-community-life-survey-ad-hoc-statistical-releases}
 "england_cls_loneliness_2020"
+
+#' Scotland Loneliness Scores from GP prescription data, 2022
+#'
+#' A dataset with scores for loneliness at IZ level.
+#' The approach and code to develop this index is based on the 
+#' Office for National Statistics' Data Science Campus Loneliness Prescription Index.
+#'
+#' @format A data frame with 1,279 rows and 4 variables:
+#' \describe{
+#'   \item{iz11_code}{Intermediate Zone Code}
+#'   \item{loneliness_zscore}{Loneliness score}
+#'   \item{rank}{Rank of loneliness score}
+#'   \item{deciles}{Loneliness score deciled}
+#'   ...
+#' }
+#' @source \url{https://www.opendata.nhs.scot}
+"scotland_prescription_loneliness_2022"
