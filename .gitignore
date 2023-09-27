@@ -58,6 +58,15 @@ rsconnect/
 venv_loneliness/
 
 # Data files scraped
-pitc/
+pitc_scotland/
+gp_details_scotland/
 gp_mapping/
+gp_data_ni/
+gp_details_ni/
+prescriptions_ni/
+pitc_ni/
 
+# Temp working files
+monthly_prescriptions_postcodes.csv
+monthly_prescriptions.csv
+monthly_prescriptions_perc.csv
