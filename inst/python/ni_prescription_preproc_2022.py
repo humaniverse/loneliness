@@ -67,7 +67,7 @@ def count_condition():
     Runs code_condition().
     """
 
-    # # Download prescribing data into inst/extdata/pitc_ni/ folder
+    # Download prescribing data into inst/extdata/pitc_ni/ folder
     destination_folder = "inst/extdata/pitc_ni"
     os.makedirs(
         destination_folder, exist_ok=True
@@ -237,7 +237,7 @@ def standardise(monthly_prescriptions_perc):
     Tidies up df.
     """
     # Uncomment line below to read intermediary csv output for testing purposes
-    monthly_prescriptions_perc = pd.read_csv("monthly_prescriptions_perc.csv")
+    # monthly_prescriptions_perc = pd.read_csv("monthly_prescriptions_perc.csv")
 
     per_cols = [
         "depression_perc",
@@ -284,9 +284,9 @@ def save_dataframe(loneliness_postcode):
     print("Dataset saved as csv")
 
 
-def build_preproc_scotland_2022():
+def build_preproc_ni_2022():
     """
-    Runs all functions required to build and save pre-processed scotland_gp_2022.csv in inst/extdata/.
+    Runs all functions required to build and save pre-processed ni_gp_2022.csv in inst/extdata/.
     To be used as an input for scotland_idw_2022.py
     """
     monthly_prescriptions = count_condition()
@@ -304,4 +304,4 @@ if __name__ == "__main__":
     # add_postcode()
     # illness_percentage()
     # standardise()
-    build_preproc_scotland_2022()
+    build_preproc_ni_2022()
