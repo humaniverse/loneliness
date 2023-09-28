@@ -272,7 +272,7 @@ def save_geodataframe(sdz_coords):
     # Tidy geodf for csv
     sdz_csv = sdz_coords[["SDZ2021_cd", "loneliness_zscore", "rank", "deciles"]]
     sdz_csv.rename(columns={"SDZ2021_cd": "sdz21_code"}, inplace=True)
-    sdz_csv.to_csv("inst/extdata/ni_prescription_loneliness_2022.csv", index=False)
+    sdz_csv.to_csv("inst/extdata/ni_clinical_loneliness_sdz.csv", index=False)
     print("CSV saved in inst/extdata.")
 
     # # Tidy geodf for geojson
@@ -281,7 +281,7 @@ def save_geodataframe(sdz_coords):
     # ]
     # iz_geojson.rename(columns={"SDZ2021_cd": "sdz21_code"}, inplace=True)
     # iz_geojson.to_file(
-    #     "inst/extdata/ni_prescription_loneliness_2022.geojson", driver="GeoJSON"
+    #     "inst/extdata/ni_clinical_loneliness_sdz.geojson", driver="GeoJSON"
     # )
 
 
