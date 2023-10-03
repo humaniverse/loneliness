@@ -21,10 +21,8 @@ gp_postcode = pd.read_csv("inst/extdata/scotland_gp_2022.csv")
 # URL to National Statistics Postcode Lookup (NSPL)
 nspl_url = "https://www.arcgis.com/sharing/rest/content/items/9ac0331178b0435e839f62f41cc61c16/data"
 
-# URL to Intermediate Zone Boundaries shape files
-iz_boundaries_url = (
-    "https://maps.gov.scot/ATOM/shapefiles/SG_IntermediateZoneBdry_2011.zip"
-)
+# URL to Data Zone Boundaries shape files
+dz_boundaries_url = "https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneBdry_2011.zip"
 
 
 def create_gp_coordinate_geoframe():
@@ -190,34 +188,32 @@ def predict_scores(gp_geo, xy, xx, best_params):
     return scores_reshaped
 
 
-def map_scores_to_iz(xmin, ymax, scores_reshaped):
+def map_scores_to_dz(xmin, ymax, scores_reshaped):
     """
-    Downloads IZ boundaries shape file.
-    Maps loneliness scores to IZs.
-    Ranks IZ and puts into deciles.
+    Downloads dz boundaries shape file.
+    Maps loneliness scores to dzs.
+    Ranks dz and puts into deciles.
     Generates a map of Scotland, by deciles.
     Takes coordinates from create_grid() and scores_reshaped from predict_scores().
-    Returns geo df with scores, rank and decile by IZ.
+    Returns geo df with scores, rank and decile by dz.
 
     """
-    # Download Intermediate Zone boundaries into temp folder and select relevant columns
-    response = requests.get(iz_boundaries_url, verify=False)
+    # Download Data Zone boundaries into temp folder and select relevant columns
+    response = requests.get(dz_boundaries_url, verify=False)
     if response.status_code == 200:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_zip_file:
             temp_zip_file.write(response.content)
             temp_zip_file_path = temp_zip_file.name
         with zipfile.ZipFile(temp_zip_file_path, "r") as zip_file:
             zip_file.extractall(tempfile.gettempdir())
-        shp_path = os.path.join(
-            tempfile.gettempdir(), "SG_IntermediateZone_Bdry_2011.shp"
-        )
-        iz_coords = gpd.read_file(shp_path)
-        print("IZ boundaries unzipped and downloaded to:", temp_zip_file_path)
+        shp_path = os.path.join(tempfile.gettempdir(), "SG_DataZone_Bdry_2011.shp")
+        dz_coords = gpd.read_file(shp_path)
+        print("dz boundaries unzipped and downloaded to:", temp_zip_file_path)
     else:
-        print("IZ boundaries failed to download.")
+        print("dz boundaries failed to download.")
 
     # Project coordinates onto British National Grid
-    iz_coords.to_crs({"init": "epsg:27700"})
+    dz_coords.to_crs({"init": "epsg:27700"})
 
     # Define transformation to project row and columns from IDW model estimates to BNG coordinates
     # +/-250 is cellsize; reflects upper and lower left origin in the array
@@ -226,8 +222,8 @@ def map_scores_to_iz(xmin, ymax, scores_reshaped):
     trans = rst.Affine.from_gdal(xmin - 125, 250, 0, ymax + 125, 0, -250)
 
     # Get the mean predicted score based on MSOA polygon shape, returns a dictionary
-    iz_score = zonal_stats(
-        iz_coords["geometry"],
+    dz_score = zonal_stats(
+        dz_coords["geometry"],
         scores_reshaped,
         affine=trans,
         stats="mean",
@@ -235,19 +231,19 @@ def map_scores_to_iz(xmin, ymax, scores_reshaped):
     )
 
     # Extract score from dictionary, turn into a list and add as col in geodf
-    iz_coords["loneliness_zscore"] = list(map(lambda x: x["mean"], iz_score))
+    dz_coords["loneliness_zscore"] = list(map(lambda x: x["mean"], dz_score))
 
     # Check histogram is normally distributed
-    iz_coords["loneliness_zscore"].hist(bins=100, figsize=(5, 3))
-    plt.title("Histogram of Loneliness Z Score, averaged per IZ")
+    dz_coords["loneliness_zscore"].hist(bins=100, figsize=(5, 3))
+    plt.title("Histogram of Loneliness Z Score, averaged per dz")
     plt.show()
 
     # Create rank and decile columns
-    iz_coords["rank"] = iz_coords["loneliness_zscore"].rank()
-    iz_coords["deciles"] = pd.qcut(iz_coords["loneliness_zscore"], q=10, labels=False)
+    dz_coords["rank"] = dz_coords["loneliness_zscore"].rank()
+    dz_coords["deciles"] = pd.qcut(dz_coords["loneliness_zscore"], q=10, labels=False)
 
     # Generate map of Scotland with decile colours to check
-    decile_values = iz_coords["deciles"].unique()
+    decile_values = dz_coords["deciles"].unique()
     cmap = cm.get_cmap(
         "YlGn", len(decile_values)
     )  # Generate colours based on number of decile values
@@ -259,31 +255,31 @@ def map_scores_to_iz(xmin, ymax, scores_reshaped):
         handles.append(Patch(facecolor=col, label=f"Decile {decile}"))
     fig, ax = plt.subplots(figsize=(5, 7))
     ax.axis("off")
-    iz_coords.plot(column="deciles", ax=ax, legend=True)
-    plt.title("Loneliness Decile by IZ")
+    dz_coords.plot(column="deciles", ax=ax, legend=True)
+    plt.title("Loneliness Decile by dz")
     plt.show()
 
-    return iz_coords
+    return dz_coords
 
 
-def save_geodataframe(iz_coords):
+def save_geodataframe(dz_coords):
     """
     Save geodf as csv and geojson in inst/extdata/.
     """
     # Tidy geodf for csv
-    iz_csv = iz_coords[["InterZone", "loneliness_zscore", "rank", "deciles"]]
-    iz_csv.rename(columns={"InterZone": "iz11_code"}, inplace=True)
-    iz_csv.to_csv("inst/extdata/scotland_prescription_loneliness_2022.csv", index=False)
+    dz_csv = dz_coords[["DataZone", "loneliness_zscore", "rank", "deciles"]]
+    dz_csv.rename(columns={"DataZone": "dz11_code"}, inplace=True)
+    dz_csv.to_csv("inst/extdata/scotland_prescription_loneliness_2022.csv", index=False)
 
     # Tidy geodf for geojson
-    iz_geojson = iz_coords[
-        ["InterZone", "loneliness_zscore", "rank", "deciles", "geometry"]
-    ]
-    iz_geojson.rename(columns={"InterZone": "iz11_code"}, inplace=True)
-    iz_geojson.to_file(
-        "inst/extdata/scotland_prescription_loneliness_2022.geojson", driver="GeoJSON"
-    )
-    print("CSV and geojson saved.")
+    # dz_geojson = dz_coords[
+    #     ["DataZone", "loneliness_zscore", "rank", "deciles", "geometry"]
+    # ]
+    # dz_geojson.rename(columns={"DataZone": "dz11_code"}, inplace=True)
+    # dz_geojson.to_file(
+    #     "inst/extdata/scotland_prescription_loneliness_2022.geojson", driver="GeoJSON"
+    # )
+    print("CSV saved.")
 
 
 if __name__ == "__main__":
@@ -292,5 +288,5 @@ if __name__ == "__main__":
     best_params = find_best_params(gp_geo)
     xy, xx, xmin, ymax = create_grid(gp_geo)
     scores_reshaped = predict_scores(gp_geo, xy, xx, best_params)
-    iz_coords = map_scores_to_iz(xmin, ymax, scores_reshaped)
-    save_geodataframe(iz_coords)
+    dz_coords = map_scores_to_dz(xmin, ymax, scores_reshaped)
+    save_geodataframe(dz_coords)
