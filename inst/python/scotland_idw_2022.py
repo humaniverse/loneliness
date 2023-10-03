@@ -1,4 +1,5 @@
 import os
+import sys
 import tempfile
 import zipfile
 import pandas as pd
@@ -269,7 +270,7 @@ def save_geodataframe(dz_coords):
     # Tidy geodf for csv
     dz_csv = dz_coords[["DataZone", "loneliness_zscore", "rank", "deciles"]]
     dz_csv.rename(columns={"DataZone": "dz11_code"}, inplace=True)
-    dz_csv.to_csv("inst/extdata/scotland_prescription_loneliness_2022.csv", index=False)
+    dz_csv.to_csv("inst/extdata/scotland_clinical_loneliness_dz.csv", index=False)
 
     # Tidy geodf for geojson
     # dz_geojson = dz_coords[
@@ -284,6 +285,13 @@ def save_geodataframe(dz_coords):
 
 if __name__ == "__main__":
     print("Running...")
+
+    if sys.base_prefix != sys.prefix:
+        venv_name = os.path.basename(sys.prefix)
+        print(f"You are in a virtual environment - {venv_name}")
+    else:
+        print("You are not in a virtual environment. Activate your venev")
+
     gp_geo = create_gp_coordinate_geoframe()
     best_params = find_best_params(gp_geo)
     xy, xx, xmin, ymax = create_grid(gp_geo)
