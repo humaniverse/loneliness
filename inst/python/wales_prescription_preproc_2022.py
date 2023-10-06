@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 import requests
 import scipy.stats as stats
@@ -281,10 +282,16 @@ def build_preproc_wales_2022():
 
 if __name__ == "__main__":
     print("Running...")
+
+    if sys.base_prefix != sys.prefix:
+        venv_name = os.path.basename(sys.prefix)
+        print(f"You are in a virtual environment - {venv_name}")
+    else:
+        print("You are not in a virtual environment. Activate your venev")
     # Uncomment to test specific functions
 
     # count_condition()
     # subset_gps()
     # illness_percentage()
     # standardise()
-    build_preproc_wales_2022()
+    # build_preproc_wales_2022()
