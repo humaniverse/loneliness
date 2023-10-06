@@ -23,7 +23,7 @@ gp_postcode = pd.read_csv("inst/extdata/wales_gp_2022.csv")
 nspl_url = "https://www.arcgis.com/sharing/rest/content/items/9ac0331178b0435e839f62f41cc61c16/data"
 
 # URL to LSOA shape files
-lsoa_boundaries_url = "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json"
+lsoa_boundaries_url = "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA_Dec_2021_Boundaries_Generalised_Clipped_EW_BGC_2022/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
 
 
 def create_gp_coordinate_geoframe():
@@ -61,7 +61,7 @@ def create_gp_coordinate_geoframe():
     # Read df as Geodataframe
     gp_geo = gpd.GeoDataFrame(
         data=gp_coordinates,
-        crs={"init": "epsg:27700"},  # EPSG 27700 == British National Grid coords
+        crs="epsg:27700",  # EPSG 27700 == British National Grid coords
         geometry=gp_coordinates.apply(
             lambda geom: Point(geom["oseast1m"], geom["osnrth1m"]), axis=1
         ),  # New column, "geometry" is created
@@ -69,13 +69,13 @@ def create_gp_coordinate_geoframe():
     print("gp_geo geodataframe created.")
 
     # Plot loneliness scores - check it is evenly distributed across Wales; note clusters around cities
-    gp_geo.plot(
-        column="loneliness_zscore", scheme="quantiles", cmap="Blues", marker="."
-    )
-    plt.title(
-        "Loneliness score by GP - evenly distributed; cluster around cities. Dark = high loneliness."
-    )
-    plt.show()
+    # gp_geo.plot(
+    #     column="loneliness_zscore", scheme="quantiles", cmap="Blues", marker="."
+    # )
+    # plt.title(
+    #     "Loneliness score by GP - evenly distributed; cluster around cities. Dark = high loneliness."
+    # )
+    # plt.show()
 
     return gp_geo
 
@@ -117,14 +117,17 @@ def find_best_params(gp_geo):
     points = gp_geo[["oseast1m", "osnrth1m"]].values
     vals = gp_geo["loneliness_zscore"].values
     print(np.isnan(points).sum(), np.isnan(vals).sum())
+    print(len(vals), len(points))
 
     # Train test split
     X_train, X_test, y_train, y_test = train_test_split(
         points, vals, test_size=0.2, random_state=42
     )
+    print(pd.isna(X_train).sum())
+    print(pd.isna(y_train).sum())
 
     # Find best params
-    param_grid = {"n_neighbors": [3, 4, 5, 6], "p": [1, 1.5, 2, 3]}
+    param_grid = {"n_neighbors": [5, 8, 10], "p": [1, 1.5, 2]}
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
     grid_search = GridSearchCV(idw_model_params, param_grid, cv=kf, error_score="raise")
     grid_search.fit(X_train, y_train)
@@ -210,22 +213,12 @@ def map_scores_to_lsoa(xmin, ymax, scores_reshaped):
     Returns geo df with scores, rank and decile by lsoa.
 
     """
-    # Download LSOA boundaries into temp folder and select relevant columns
-    response = requests.get(lsoa_boundaries_url, verify=False)
-    if response.status_code == 200:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_zip_file:
-            temp_zip_file.write(response.content)
-            temp_zip_file_path = temp_zip_file.name
-        with zipfile.ZipFile(temp_zip_file_path, "r") as zip_file:
-            zip_file.extractall(tempfile.gettempdir())
-        shp_path = os.path.join(tempfile.gettempdir(), "LSOA_2021_EW_BGC.shp")
-        lsoa_coords = gpd.read_file(shp_path)
-        print("LSOA boundaries unzipped and downloaded to:", temp_zip_file_path)
-    else:
-        print("lsoa boundaries failed to download.")
-
+    # Download LSOA boundaries for England and Wales
+    lsoa_coords = gpd.read_file(lsoa_boundaries_url)
     # Project coordinates onto British National Grid
-    lsoa_coords.to_crs({"init": "epsg:27700"})
+    lsoa_coords.to_crs("epsg:27700")
+    # Filter for Wales only
+    lsoa_coords = lsoa_coords[lsoa_coords.LSOA21CD.str.startswith("W")]
 
     print(f"Are there 1,917 lsoas? lsoas: {lsoa_coords.LSOA21CD.nunique()}")
 
@@ -305,9 +298,20 @@ if __name__ == "__main__":
     else:
         print("You are not in a virtual environment. Activate your venev")
 
-    gp_geo = create_gp_coordinate_geoframe()
-    best_params = find_best_params(gp_geo)
-    xy, xx, xmin, ymax = create_grid(gp_geo)
-    scores_reshaped = predict_scores(gp_geo, xy, xx, best_params)
-    lsoa_coords = map_scores_to_lsoa(xmin, ymax, scores_reshaped)
-    save_geodataframe(lsoa_coords)
+    # gp_geo = create_gp_coordinate_geoframe()
+    # best_params = find_best_params(gp_geo)
+    # xy, xx, xmin, ymax = create_grid(gp_geo)
+    # scores_reshaped = predict_scores(gp_geo, xy, xx, best_params)
+    # lsoa_coords = map_scores_to_lsoa(xmin, ymax, scores_reshaped)
+    # save_geodataframe(lsoa_coords)
+
+    lsoa_coords = gpd.read_file(lsoa_boundaries_url)
+    print(lsoa_coords.head(2))
+    # Project coordinates onto British National Grid
+    # lsoa_coords = lsoa_coords.to_crs(27700)
+    print(lsoa_coords.head(2))
+    # Filter for Wales only
+    lsoa_coords = lsoa_coords[lsoa_coords.LSOA21CD.str.startswith("W")]
+    print(lsoa_coords.head(5))
+    print(lsoa_coords.columns)
+    print(f"Are there 1,917 lsoas? lsoas: {lsoa_coords.LSOA21CD.nunique()}")
