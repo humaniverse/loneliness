@@ -22,8 +22,8 @@ gp_postcode = pd.read_csv("inst/extdata/wales_gp_2022.csv")
 # URL to National Statistics Postcode Lookup (NSPL)
 nspl_url = "https://www.arcgis.com/sharing/rest/content/items/9ac0331178b0435e839f62f41cc61c16/data"
 
-# URL to LSOA shape files
-lsoa_boundaries_url = "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA_Dec_2021_Boundaries_Generalised_Clipped_EW_BGC_2022/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
+# API to LSOA shape files, filtered for Wales
+lsoa_boundaries_url = "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA_Dec_2021_Boundaries_Generalised_Clipped_EW_BGC_2022/FeatureServer/0/query?where=LSOA21CD+LIKE+'W%25'&outFields=*&outSR=4326&f=json"
 
 
 def create_gp_coordinate_geoframe():
@@ -213,13 +213,9 @@ def map_scores_to_lsoa(xmin, ymax, scores_reshaped):
     Returns geo df with scores, rank and decile by lsoa.
 
     """
-    # Download LSOA boundaries for England and Wales
+    # Call API
     lsoa_coords = gpd.read_file(lsoa_boundaries_url)
-    # Project coordinates onto British National Grid
-    lsoa_coords.to_crs("epsg:27700")
-    # Filter for Wales only
-    lsoa_coords = lsoa_coords[lsoa_coords.LSOA21CD.str.startswith("W")]
-
+    lsoa_coords = lsoa_coords.to_crs("epsg:27700")  # British National Grid
     print(f"Are there 1,917 lsoas? lsoas: {lsoa_coords.LSOA21CD.nunique()}")
 
     # Define transformation to map row and columns from IDW model estimates to spatial coordinates
@@ -261,7 +257,7 @@ def map_scores_to_lsoa(xmin, ymax, scores_reshaped):
     fig, ax = plt.subplots(figsize=(5, 7))
     ax.axis("off")
     lsoa_coords.plot(column="deciles", ax=ax, legend=True)
-    plt.title("Loneliness Decile by lsoa - 3 values missing")
+    plt.title("Loneliness Decile by lsoa - 5 values missing")
     plt.show()
 
     print("lsoas without score do not have GP postcodes within its boundary.")
@@ -276,7 +272,7 @@ def save_geodataframe(lsoa_coords):
     # Tidy geodf for csv
     lsoa_csv = lsoa_coords[["LSOA21CD", "loneliness_zscore", "rank", "deciles"]]
     lsoa_csv.rename(columns={"LSOA21CD": "lsoa21_code"}, inplace=True)
-    lsoa_csv.to_csv("inst/extdata/ni_clinical_loneliness_lsoa.csv", index=False)
+    lsoa_csv.to_csv("inst/extdata/wales_clinical_loneliness_lsoa.csv", index=False)
     print("CSV saved in inst/extdata.")
 
     # # Tidy geodf for geojson
@@ -298,20 +294,9 @@ if __name__ == "__main__":
     else:
         print("You are not in a virtual environment. Activate your venev")
 
-    # gp_geo = create_gp_coordinate_geoframe()
-    # best_params = find_best_params(gp_geo)
-    # xy, xx, xmin, ymax = create_grid(gp_geo)
-    # scores_reshaped = predict_scores(gp_geo, xy, xx, best_params)
-    # lsoa_coords = map_scores_to_lsoa(xmin, ymax, scores_reshaped)
-    # save_geodataframe(lsoa_coords)
-
-    lsoa_coords = gpd.read_file(lsoa_boundaries_url)
-    print(lsoa_coords.head(2))
-    # Project coordinates onto British National Grid
-    # lsoa_coords = lsoa_coords.to_crs(27700)
-    print(lsoa_coords.head(2))
-    # Filter for Wales only
-    lsoa_coords = lsoa_coords[lsoa_coords.LSOA21CD.str.startswith("W")]
-    print(lsoa_coords.head(5))
-    print(lsoa_coords.columns)
-    print(f"Are there 1,917 lsoas? lsoas: {lsoa_coords.LSOA21CD.nunique()}")
+    gp_geo = create_gp_coordinate_geoframe()
+    best_params = find_best_params(gp_geo)
+    xy, xx, xmin, ymax = create_grid(gp_geo)
+    scores_reshaped = predict_scores(gp_geo, xy, xx, best_params)
+    lsoa_coords = map_scores_to_lsoa(xmin, ymax, scores_reshaped)
+    save_geodataframe(lsoa_coords)
