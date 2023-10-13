@@ -8,9 +8,6 @@
 A data frame with 850 rows and 4 variables:
 \describe{
 \item{sdz21_code}{Super Data Zone Code}
-\item{loneliness_zscore}{Loneliness score}
-\item{rank}{Rank of loneliness score}
-\item{deciles}{Loneliness score deciled}
 ...
 }
 }
@@ -21,7 +18,7 @@ A data frame with 850 rows and 4 variables:
 ni_clinical_loneliness_sdz
 }
 \description{
-A dataset with scores for loneliness at SDZ level.
+A dataset with scores for loneliness at SDZ level based on GP prescription data.
 The approach and code to develop this index is based on the
 Office for National Statistics' Data Science Campus Loneliness Prescription Index.
 }
