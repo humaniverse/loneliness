@@ -8,43 +8,42 @@ import matplotlib.pyplot as plt
 # Load data containing conditions associated with loneliness and their respective medications
 loneliness_conditions_drugs = pd.read_csv("inst/extdata/drug_list.csv")
 
-# URLs to Prescription in the Community csv files (2022)
-# https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community
+# URLs to GP Prescribing Data (2022)
+# https://www.data.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/gp-prescribing-data
 pitc_urls = [
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/00213ffa-941e-4389-9e6f-3bca8067da8c/download/pitc202212.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/023986c0-3bb2-43cb-84e8-2e0b3bb1f55f/download/pitc202211.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/bd7bc2cf-4de5-4711-bd5a-9e3b77305453/download/pitc202210.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/9d0a518d-9d9c-4bcb-afd8-51f6abb7edf1/download/pitc202209.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/49fa5784-be06-4015-bc6d-9b5db8726473/download/pitc202208.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/26ce66f1-e7f2-4c71-9995-5dc65f76ecfb/download/pitc202207.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/debeadd8-2bbb-4dd3-82de-831531bab2cb/download/pitc202206.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/1b4e3200-b6e6-415f-b19a-b9ef927db1ab/download/pitc202205.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/7de8c908-86f8-45ac-b6a4-e21d1df30584/download/pitc202204.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/a0ec3bf2-7339-413b-9c66-2891cfd7919f/download/pitc202203.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/bd7aa5c9-d708-4d0b-9b28-a9d822c84e34/download/pitc202202.csv",
-    "https://www.opendata.nhs.scot/dataset/84393984-14e9-4b0d-a797-b288db64d088/resource/53a53d61-3b3b-4a12-888b-a788ce13db9c/download/pitc202201.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/6d56613a-968b-4ebb-97f2-e19b637744a1/download/gp-prescribing---december-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/968d637e-073a-4b1a-a3e1-be9050c0fb36/download/08.-gp-prescribing---november-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/6b2b80a6-ea5d-419b-a7a3-89267c37c5c3/download/gp-prescribing---october-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/fb419ac5-21aa-4daf-b1a5-3f08d1339a09/download/gp-prescribing---september-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/93517fa2-1cd3-4640-a64f-c747748e3fce/download/gp-prescribing---august-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/9be6af28-ec9f-4b25-8760-19d439ec45cd/download/gp-prescribing---july-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/ceb972fd-1576-4738-a416-0f5a0f8e2927/download/gp-prescribing---june-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/c6647529-298f-49b3-a1bb-4d1b3bdcd315/download/gp-prescribing---may-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/2d8ade34-6ed0-4d9b-a909-7c3c738320c3/download/gp-prescribing-march-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/486c153c-a2dc-4275-994f-21c01763f4f6/download/gp-prescribing-february-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/a7b76920-bc0a-48fd-9abf-dc5ad0999886/resource/d255072d-58fe-4658-8180-86fee053e240/download/gp-prescribing-january-2022-v2.csv",
 ]
 
-# URLs for GP contact details csv files (2022)
-# https://www.opendata.nhs.scot/dataset/gp-practice-contact-details-and-list-sizes
-gp_details = [
-    "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/1a15cb34-fcf9-4d3f-ad63-1ba3e675fbe2/download/practice_contactdetails_oct2022-open-data.csv",
-    "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/5273d444-5a79-4fad-a518-119a368e2161/download/practice_contactdetails_jul2022-open-data.csv",
-    "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/8175c9ac-6953-4636-b151-f3946ef0fb80/download/practice_contactdetails_apr2022-open-data.csv",
-    "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/1f76c338-7890-4ee7-b1bd-4d837cc1d50a/download/practice_contactdetails_jan2022.csv",
+# URLs for GP Practice Contact Details and List Sizes csv files (2022)
+# https://www.data.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/gp-practice-list-sizes
+gp_details_ni = [
+    "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/d8e77f57-120c-44d9-b360-f52e74ea4add/download/gp-practice-reference-file---october-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/5311b385-0551-4494-a3ac-cbbc5f84289c/download/gp-practice-reference-file--july-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/8f910a09-3cb6-4071-85c3-0e7677965de2/download/gp-practice-reference-file--april-2022.csv",
+    "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/80b06a43-2d1f-47c2-9142-7f46e9ea6e8b/download/gp-practice-reference-file--january-2022.csv",
 ]
 
 
 def code_condition(df):
     """
-    Takes in the prescription in the community (pitc) dataframe and identifies loneliness related conditions based on prescription.
+    Takes in the GP Prescribing Data dataframe and identifies loneliness related conditions based on prescription.
     Outputs a dataframe that multiplies loneliness related prescriptions by its count.
     Function is called in count_condition().
     """
     out = {}
     for illness in loneliness_conditions_drugs["illness"].unique():
         out[illness] = (
-            df["BNFItemDescription"]
+            df["VTM_NM"]
             .str.contains(
                 "|".join(
                     loneliness_conditions_drugs[
@@ -58,19 +57,19 @@ def code_condition(df):
             .astype("int16")
         )
     out = pd.DataFrame(out)
-    return out.multiply(df["NumberOfPaidItems"], axis=0)
+    return out.multiply(df["Total Items"], axis=0)
 
 
 def count_condition():
     """
-    Downloads each month of the prescription in the community CSV into a inst/extdata/pitc_scotland/
+    Downloads each month of the prescribing data CSV into a inst/extdata/pitc_ni/
     Iterates over the monthly prescribing data to output an aggregated dataframe that sums number of prescriptions by illness type.
     Dataframe is grouped by GP practice.
     Runs code_condition().
     """
 
-    # Download prescribing data into inst/extdata/pitc/ folder
-    destination_folder = "inst/extdata/pitc_scotland"
+    # Download prescribing data into inst/extdata/pitc_ni/ folder
+    destination_folder = "inst/extdata/pitc_ni"
     os.makedirs(
         destination_folder, exist_ok=True
     )  # Create the destination folder if it doesn't exist
@@ -89,22 +88,24 @@ def count_condition():
     # Iterate over each monthly csv to count prescriptions
     monthly_data = []
     for file in os.listdir(destination_folder):
-        prescribe = pd.read_csv(os.path.join(destination_folder, file))
+        prescribe = pd.read_csv(
+            os.path.join(destination_folder, file),
+            encoding="ISO-8859-1",
+            low_memory=False,
+        )
         prescribe.columns = prescribe.columns.str.strip()
-        prescribe = prescribe[["GPPractice", "BNFItemDescription", "NumberOfPaidItems"]]
+        prescribe = prescribe[["Practice", "VTM_NM", "Total Items"]]
         print(f" Proccessing {file}")
 
         # Count prescriptions
-        loneliness_prescribing = code_condition(
-            prescribe[["BNFItemDescription", "NumberOfPaidItems"]]
-        )
+        loneliness_prescribing = code_condition(prescribe[["VTM_NM", "Total Items"]])
         prescribe = prescribe.merge(
             loneliness_prescribing, left_index=True, right_index=True
         )
         del loneliness_prescribing
 
-        # Group by GPPractice and sum prescriptions across the year
-        summary = prescribe.groupby("GPPractice", as_index=False).agg(sum)
+        # Group by Practice and sum prescriptions across the year
+        summary = prescribe.groupby("Practice", as_index=False).agg(sum)
         monthly_data.append(summary)
         print(f" Completed processing {file}")
 
@@ -131,13 +132,13 @@ def add_postcode(monthly_prescriptions):
     # Uncomment line below to read intermediary csv output for testing purposes
     # monthly_prescriptions = pd.read_csv("monthly_prescriptions.csv")
 
-    # Download GP contact details data into inst/extdata/gp_details/ folder
-    destination_folder = "inst/extdata/gp_details_scotland"
+    # Download GP contact details data into inst/extdata/gp_details_ni/ folder
+    destination_folder = "inst/extdata/gp_details_ni"
     os.makedirs(
         destination_folder, exist_ok=True
     )  # Create the destination folder if it doesn't exist
 
-    for url in gp_details:
+    for url in gp_details_ni:
         response = requests.get(url)
         if response.status_code == 200:
             filename = os.path.basename(url)
@@ -152,8 +153,8 @@ def add_postcode(monthly_prescriptions):
     gp_combine = []
     for file in os.listdir(destination_folder):
         gp_data = pd.read_csv(os.path.join(destination_folder, file))
-        gp_data = gp_data.rename(columns={"PracticeCode": "GPPractice"})
-        gp_combine.append(gp_data[["GPPractice", "Postcode"]])
+        gp_data = gp_data.rename(columns={"PracNo": "Practice"})
+        gp_combine.append(gp_data[["Practice", "Postcode"]])
     gp_data = pd.concat(gp_combine, ignore_index=True)
     print(f"GP contact details processed. Shape {gp_data.shape}")
 
@@ -162,9 +163,9 @@ def add_postcode(monthly_prescriptions):
 
     # Subset monthly prescription data with GP practices that appear in the gp_data df as
     # monthly_prescription includes non GP practices e.g. pharamcies
-    gp_ids = gp_data["GPPractice"].unique()
+    gp_ids = gp_data["Practice"].unique()
     monthly_prescriptions = monthly_prescriptions[
-        monthly_prescriptions["GPPractice"].isin(gp_ids)
+        monthly_prescriptions["Practice"].isin(gp_ids)
     ].copy()
     print(
         f"Shape of monthly_prescription once subsetted with GPs only: {monthly_prescriptions.shape}"
@@ -172,7 +173,7 @@ def add_postcode(monthly_prescriptions):
 
     # Join GP details to prescription data
     monthly_prescriptions_postcodes = monthly_prescriptions.merge(
-        gp_data, how="left", on="GPPractice"
+        gp_data, how="left", on="Practice"
     )
     monthly_prescriptions_postcodes["pcstrip"] = monthly_prescriptions_postcodes[
         "Postcode"
@@ -185,17 +186,21 @@ def add_postcode(monthly_prescriptions):
 
     # Drop second instance of the two GP practices with two postcodes asigned to them
     monthly_prescriptions_postcodes = monthly_prescriptions_postcodes[
-        ~monthly_prescriptions_postcodes.duplicated(subset="GPPractice", keep="first")
-        | ~monthly_prescriptions_postcodes["GPPractice"].isin([2910096, 258060])
+        ~monthly_prescriptions_postcodes.duplicated(subset="Practice", keep="first")
+        | ~monthly_prescriptions_postcodes["Practice"].isin(
+            [2412, 6516, 6432, 900, 828]
+        )
     ]
     monthly_prescriptions_postcodes = monthly_prescriptions_postcodes.drop(
-        columns=["Postcode", "GPPractice", "BNFItemDescription"]
+        columns=["Postcode", "Practice", "VTM_NM"]
     )
     print(
         f"Postcodes added to monthly prescriptions. Number of  postcodes in merged df {len(monthly_prescriptions_postcodes)}"
     )
     # Uncomment line below to save intermediary output as csv for testing purposes
-    # monthly_prescriptions_postcodes.to_csv("monthly_prescriptions_postcodes.csv", index=False)
+    # monthly_prescriptions_postcodes.to_csv(
+    #     "monthly_prescriptions_postcodes.csv", index=False
+    # )
     return monthly_prescriptions_postcodes
 
 
@@ -211,7 +216,7 @@ def illness_percentage(monthly_prescriptions_postcodes):
     # Percentages for discrete illness groups out of total drugs prescribed
     monthly_prescriptions_postcodes[target_cols] = (
         monthly_prescriptions_postcodes[perc_cols].divide(
-            monthly_prescriptions_postcodes["NumberOfPaidItems"], axis=0
+            monthly_prescriptions_postcodes["Total Items"], axis=0
         )
         * 100
     )
@@ -276,13 +281,13 @@ def save_dataframe(loneliness_postcode):
     """
     Saves dataframe in extdata/ as csv
     """
-    loneliness_postcode.to_csv("inst/extdata/scotland_gp_2022.csv", index=False)
+    loneliness_postcode.to_csv("inst/extdata/ni_gp_2022.csv", index=False)
     print("Dataset saved as csv")
 
 
-def build_preproc_scotland_2022():
+def build_preproc_ni_2022():
     """
-    Runs all functions required to build and save pre-processed scotland_gp_2022.csv in inst/extdata/.
+    Runs all functions required to build and save pre-processed ni_gp_2022.csv in inst/extdata/.
     To be used as an input for scotland_idw_2022.py
     """
     monthly_prescriptions = count_condition()
@@ -307,4 +312,4 @@ if __name__ == "__main__":
     # add_postcode()
     # illness_percentage()
     # standardise()
-    build_preproc_scotland_2022()
+    build_preproc_ni_2022()
