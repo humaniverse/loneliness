@@ -15,17 +15,20 @@
 #'   ...
 #' }
 #' @source \url{https://www.gov.uk/government/statistical-data-sets/dcms-community-life-survey-ad-hoc-statistical-releases}
-"england_cls_loneliness_2020"
+"england_cls_loneliness_lsoa"
 
 #' Northern Ireland Loneliness Scores from GP prescription data, 2022
 #'
-#' A dataset with scores for loneliness at SDZ level.
+#' A dataset with scores for loneliness at SDZ level based on GP prescription data.
 #' The approach and code to develop this index is based on the 
 #' Office for National Statistics' Data Science Campus Loneliness Prescription Index.
 #'
 #' @format A data frame with 850 rows and 4 variables:
 #' \describe{
 #'   \item{sdz21_code}{Super Data Zone Code}
+#'   \item{loneliness_zscore}{Loneliness score}
+#'   \item{rank}{Rank of loneliness score}
+#'   \item{deciles}{Loneliness score deciled}
 #'  ...
 #' }
 #' @source \url{https://www.data.gov.uk}
@@ -33,7 +36,7 @@
 
 #' Scotland Loneliness Scores from GP prescription data, 2022
 #'
-#' A dataset with scores for loneliness at IZ level.
+#' A dataset with scores for loneliness at IZ level based on GP prescription data.
 #' The approach and code to develop this index is based on the 
 #' Office for National Statistics' Data Science Campus Loneliness Prescription Index.
 #'
@@ -46,4 +49,21 @@
 #'   ...
 #'  }
 #' @source \url{https://www.opendata.nhs.scot}
-"scotland_prescription_loneliness_2022"
+"scotland_clinical_loneliness_dz"
+
+#' Wales Loneliness Scores from GP prescription data, 2022
+#'
+#' A dataset with scores for loneliness at LSOA level based on GP prescription data.
+#' The approach and code to develop this index is based on the 
+#' Office for National Statistics' Data Science Campus Loneliness Prescription Index.
+#'
+#' @format A data frame with 1,917 rows and 4 variables:
+#' \describe{
+#'   \item{lsoa21_code}{Lower Super Output Area Code}
+#'   \item{loneliness_zscore}{Loneliness score}
+#'   \item{rank}{Rank of loneliness score}
+#'   \item{deciles}{Loneliness score deciled}
+#'   ...
+#'  }
+#' @source \url{https://nwssp.nhs.wales/}
+"wales_clinical_loneliness_lsoa"
