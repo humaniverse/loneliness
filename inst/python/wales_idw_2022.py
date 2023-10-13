@@ -16,14 +16,14 @@ from shapely.geometry import Point
 import rasterio as rst
 from rasterstats import zonal_stats
 
-# Load loneliness scores by GP created by ni_prescription_preproc_2022.py
-gp_postcode = pd.read_csv("inst/extdata/ni_gp_2022.csv")
+# Load loneliness scores by GP created by wales_prescription_preproc_2022.py
+gp_postcode = pd.read_csv("inst/extdata/wales_gp_2022.csv")
 
 # URL to National Statistics Postcode Lookup (NSPL)
 nspl_url = "https://www.arcgis.com/sharing/rest/content/items/9ac0331178b0435e839f62f41cc61c16/data"
 
-# URL to Super Data Zones shape files
-sdz_boundaries_url = "https://www.nisra.gov.uk/sites/nisra.gov.uk/files/publications/geography-sdz2021-esri-shapefile.zip"
+# API to LSOA shape files, filtered for Wales
+lsoa_boundaries_url = "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA_Dec_2021_Boundaries_Generalised_Clipped_EW_BGC_2022/FeatureServer/0/query?where=LSOA21CD+LIKE+'W%25'&outFields=*&outSR=4326&f=json"
 
 
 def create_gp_coordinate_geoframe():
@@ -33,43 +33,49 @@ def create_gp_coordinate_geoframe():
     Returns a geoframe gp_geo used in subsequent functions.
     """
     # Download NSPL into temp folder and select relevant columns
-    print("Downloading NSPL...")
-    response = requests.get(nspl_url)
-    if response.status_code == 200:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_zip_file:
-            temp_zip_file.write(response.content)
-            temp_zip_file_path = temp_zip_file.name
-        with zipfile.ZipFile(temp_zip_file_path, "r") as zip_file:
-            with zip_file.open("Data/NSPL_MAY_2022_UK.csv") as csv_file:
-                nspl = pd.read_csv(csv_file, low_memory=False)
-        print("NSPL unzipped and downloaded to:", temp_zip_file_path)
-    else:
-        print("NSPL failed to download.")
+    # print("Downloading NSPL...")
+    # response = requests.get(nspl_url)
+    # if response.status_code == 200:
+    #     with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_zip_file:
+    #         temp_zip_file.write(response.content)
+    #         temp_zip_file_path = temp_zip_file.name
+    #     with zipfile.ZipFile(temp_zip_file_path, "r") as zip_file:
+    #         with zip_file.open("Data/NSPL_MAY_2022_UK.csv") as csv_file:
+    #             nspl = pd.read_csv(csv_file, low_memory=False)
+    #     print("NSPL unzipped and downloaded to:", temp_zip_file_path)
+    # else:
+    #     print("NSPL failed to download.")
+
+    nspl = pd.read_csv(
+        "C:/Users/JennaTan/Downloads/NSPL_MAY_2022_UK.csv", low_memory=False
+    )
+
     nspl = nspl[["pcds", "oseast1m", "osnrth1m", "lsoa11", "msoa11"]]
     nspl["pcds"] = nspl.pcds.str.replace(" ", "")
 
     # Join gp_postcode to nspl
     gp_postcode.rename(columns={"postcode": "pcds"}, inplace=True)
     gp_coordinates = gp_postcode.merge(nspl, on="pcds", how="left")
+    gp_coordinates.dropna(inplace=True)
 
     # Read df as Geodataframe
     gp_geo = gpd.GeoDataFrame(
         data=gp_coordinates,
-        crs={"init": "epsg:27700"},  # EPSG 27700 == British National Grid coords
+        crs="epsg:27700",  # EPSG 27700 == British National Grid coords
         geometry=gp_coordinates.apply(
             lambda geom: Point(geom["oseast1m"], geom["osnrth1m"]), axis=1
         ),  # New column, "geometry" is created
     )
     print("gp_geo geodataframe created.")
 
-    # Plot loneliness scores - check it is evenly distributed across NI; note clusters around cities
-    gp_geo.plot(
-        column="loneliness_zscore", scheme="quantiles", cmap="Blues", marker="."
-    )
-    plt.title(
-        "Loneliness score by GP - evenly distributed; cluster around Belfast. Dark = high loneliness."
-    )
-    plt.show()
+    # Plot loneliness scores - check it is evenly distributed across Wales; note clusters around cities
+    # gp_geo.plot(
+    #     column="loneliness_zscore", scheme="quantiles", cmap="Blues", marker="."
+    # )
+    # plt.title(
+    #     "Loneliness score by GP - evenly distributed; cluster around cities. Dark = high loneliness."
+    # )
+    # plt.show()
 
     return gp_geo
 
@@ -104,6 +110,7 @@ def find_best_params(gp_geo):
     Returns a dict of best k and best p value.
     """
     idw_model_params = create_idw_model(1, 1)
+    print("IDW model instatiated with dummy variables")
 
     # Get existing point locations and values to fit the model from gp_geo
     points = gp_geo[["oseast1m", "osnrth1m"]].values
@@ -115,10 +122,9 @@ def find_best_params(gp_geo):
     )
 
     # Find best params
-    # Use lower neighbours as have small dataset
-    param_grid = {"n_neighbors": [2, 3, 4, 5], "p": [0.5, 1, 1.5, 2]}
+    param_grid = {"n_neighbors": [5, 8, 10], "p": [1, 1.5, 2]}
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
-    grid_search = GridSearchCV(idw_model_params, param_grid, cv=kf)
+    grid_search = GridSearchCV(idw_model_params, param_grid, cv=kf, error_score="raise")
     grid_search.fit(X_train, y_train)
 
     best_k = grid_search.best_params_["n_neighbors"]
@@ -148,7 +154,6 @@ def create_grid(gp_geo):
     xmax_coords = gp_geo["oseast1m"].max()
     ymin_coords = gp_geo["osnrth1m"].min()
     ymax_coords = gp_geo["osnrth1m"].max()
-    # 250 = 250m x250m on BNG
     cellsize = 250
 
     # Adjust x and y ranges to be perfectly divisible by cellsize using floor and ceiling division, ensuring even spacing
@@ -193,44 +198,27 @@ def predict_scores(gp_geo, xy, xx, best_params):
     return scores_reshaped
 
 
-def map_scores_to_sdz(xmin, ymax, scores_reshaped):
+def map_scores_to_lsoa(xmin, ymax, scores_reshaped):
     """
-    Downloads SDZ boundaries shape file.
-    Maps loneliness scores to SDZs.
-    Ranks SDZ and puts into deciles.
+    Downloads LSOA boundaries shape file.
+    Maps loneliness scores to LSOAs.
+    Ranks LSOA and puts into deciles.
     Generates a map of Scotland, by deciles.
     Takes coordinates from create_grid() and scores_reshaped from predict_scores().
-    Returns geo df with scores, rank and decile by SDZ.
+    Returns geo df with scores, rank and decile by lsoa.
 
     """
-    # Download SDZ boundaries into temp folder and select relevant columns
-    response = requests.get(sdz_boundaries_url, verify=False)
-    if response.status_code == 200:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_zip_file:
-            temp_zip_file.write(response.content)
-            temp_zip_file_path = temp_zip_file.name
-        with zipfile.ZipFile(temp_zip_file_path, "r") as zip_file:
-            zip_file.extractall(tempfile.gettempdir())
-        shp_path = os.path.join(tempfile.gettempdir(), "SDZ2021.shp")
-        sdz_coords = gpd.read_file(shp_path)
-        print("SDZ boundaries unzipped and downloaded to:", temp_zip_file_path)
-    else:
-        print("SDZ boundaries failed to download.")
+    # Call API
+    lsoa_coords = gpd.read_file(lsoa_boundaries_url)
+    lsoa_coords = lsoa_coords.to_crs("epsg:27700")  # British National Grid
+    print(f"Are there 1,917 lsoas? lsoas: {lsoa_coords.LSOA21CD.nunique()}")
 
-    # Project coordinates onto British National Grid
-    sdz_coords.to_crs({"init": "epsg:27700"})
-
-    print(f"Are there 850 SDZs? SDZs: {sdz_coords.SDZ2021_cd.nunique()}")
-
-    # Define transformation to project row and columns from IDW model estimates to BNG coordinates
-    # +/-250 is cellsize; reflects upper and lower left origin in the array
-    # xmin, ymax is the amount needed to shift an origin (0,0) to line up with BNG projection
-    # 125 is padding (half of 250) to ensure cells are centred over starting boundaries
+    # Define transformation to map row and columns from IDW model estimates to spatial coordinates
     trans = rst.Affine.from_gdal(xmin - 125, 250, 0, ymax + 125, 0, -250)
 
     # Get the mean predicted score based on MSOA polygon shape, returns a dictionary
-    sdz_score = zonal_stats(
-        sdz_coords["geometry"],
+    lsoa_score = zonal_stats(
+        lsoa_coords["geometry"],
         scores_reshaped,
         affine=trans,
         stats="mean",
@@ -238,19 +226,21 @@ def map_scores_to_sdz(xmin, ymax, scores_reshaped):
     )
 
     # Extract score from dictionary, turn into a list and add as col in geodf
-    sdz_coords["loneliness_zscore"] = list(map(lambda x: x["mean"], sdz_score))
+    lsoa_coords["loneliness_zscore"] = list(map(lambda x: x["mean"], lsoa_score))
 
     # Check histogram is normally distributed
-    sdz_coords["loneliness_zscore"].hist(bins=100, figsize=(5, 3))
-    plt.title("Hist of Loneliness Score, averaged per SDZ - normally distributed")
+    lsoa_coords["loneliness_zscore"].hist(bins=100, figsize=(5, 3))
+    plt.title("Hist of Loneliness Score, averaged per lsoa - normally distributed")
     plt.show()
 
     # Create rank and decile columns
-    sdz_coords["rank"] = sdz_coords["loneliness_zscore"].rank()
-    sdz_coords["deciles"] = pd.qcut(sdz_coords["loneliness_zscore"], q=10, labels=False)
+    lsoa_coords["rank"] = lsoa_coords["loneliness_zscore"].rank()
+    lsoa_coords["deciles"] = pd.qcut(
+        lsoa_coords["loneliness_zscore"], q=10, labels=False
+    )
 
     # Generate map of Scotland with decile colours to check
-    decile_values = sdz_coords["deciles"].unique()
+    decile_values = lsoa_coords["deciles"].unique()
     cmap = cm.get_cmap(
         "YlGn", len(decile_values)
     )  # Generate colours based on number of decile values
@@ -261,32 +251,30 @@ def map_scores_to_sdz(xmin, ymax, scores_reshaped):
         handles.append(Patch(facecolor=col, label=f"Decile {decile}"))
     fig, ax = plt.subplots(figsize=(5, 7))
     ax.axis("off")
-    sdz_coords.plot(column="deciles", ax=ax, legend=True)
-    plt.title("Loneliness Decile by SDZ - 3 values missing")
+    lsoa_coords.plot(column="deciles", ax=ax, legend=True)
+    plt.title("Loneliness Decile by lsoa - 5 values missing")
     plt.show()
 
-    print("SDZs without score do not have GP postcodes within its boundary.")
-
-    return sdz_coords
+    return lsoa_coords
 
 
-def save_geodataframe(sdz_coords):
+def save_geodataframe(lsoa_coords):
     """
     Save geodf as csv and geojson in inst/extdata/.
     """
     # Tidy geodf for csv
-    sdz_csv = sdz_coords[["SDZ2021_cd", "loneliness_zscore", "rank", "deciles"]]
-    sdz_csv.rename(columns={"SDZ2021_cd": "sdz21_code"}, inplace=True)
-    sdz_csv.to_csv("inst/extdata/ni_clinical_loneliness_sdz.csv", index=False)
+    lsoa_csv = lsoa_coords[["LSOA21CD", "loneliness_zscore", "rank", "deciles"]]
+    lsoa_csv.rename(columns={"LSOA21CD": "lsoa21_code"}, inplace=True)
+    lsoa_csv.to_csv("inst/extdata/wales_clinical_loneliness_lsoa.csv", index=False)
     print("CSV saved in inst/extdata.")
 
     # # Tidy geodf for geojson
-    # iz_geojson = sdz_coords[
-    #     ["SDZ2021_cd", "loneliness_zscore", "rank", "deciles", "geometry"]
+    # iz_geojson = lsoa_coords[
+    #     ["lsoa2021_cd", "loneliness_zscore", "rank", "deciles", "geometry"]
     # ]
-    # iz_geojson.rename(columns={"SDZ2021_cd": "sdz21_code"}, inplace=True)
+    # iz_geojson.rename(columns={"lsoa2021_cd": "lsoa21_code"}, inplace=True)
     # iz_geojson.to_file(
-    #     "inst/extdata/ni_clinical_loneliness_sdz.geojson", driver="GeoJSON"
+    #     "inst/extdata/ni_clinical_loneliness_lsoa.geojson", driver="GeoJSON"
     # )
 
 
@@ -303,5 +291,5 @@ if __name__ == "__main__":
     best_params = find_best_params(gp_geo)
     xy, xx, xmin, ymax = create_grid(gp_geo)
     scores_reshaped = predict_scores(gp_geo, xy, xx, best_params)
-    sdz_coords = map_scores_to_sdz(xmin, ymax, scores_reshaped)
-    save_geodataframe(sdz_coords)
+    lsoa_coords = map_scores_to_lsoa(xmin, ymax, scores_reshaped)
+    save_geodataframe(lsoa_coords)

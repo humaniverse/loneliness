@@ -65,6 +65,8 @@ gp_data_ni/
 gp_details_ni/
 prescriptions_ni/
 pitc_ni/
+gp_details_wales/
+pitc_wales/
 
 # Temp working files
 monthly_prescriptions_postcodes.csv
