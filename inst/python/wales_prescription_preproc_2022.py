@@ -288,10 +288,11 @@ if __name__ == "__main__":
         print(f"You are in a virtual environment - {venv_name}")
     else:
         print("You are not in a virtual environment. Activate your venev")
+
     # Uncomment to test specific functions
 
     # count_condition()
     # subset_gps()
     # illness_percentage()
     # standardise()
-    # build_preproc_wales_2022()
+    build_preproc_wales_2022()

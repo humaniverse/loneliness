@@ -98,7 +98,6 @@ def create_idw_model(k, p):
         return np.nan_to_num(safe_weights, posinf=0)  # ignore weights that are negative
 
     model = KNeighborsRegressor(k, weights=lambda x: _inv_distance_index(x, index=p))
-    print("Model instantiated")
 
     return model
 
@@ -116,15 +115,11 @@ def find_best_params(gp_geo):
     # Get existing point locations and values to fit the model from gp_geo
     points = gp_geo[["oseast1m", "osnrth1m"]].values
     vals = gp_geo["loneliness_zscore"].values
-    print(np.isnan(points).sum(), np.isnan(vals).sum())
-    print(len(vals), len(points))
 
     # Train test split
     X_train, X_test, y_train, y_test = train_test_split(
         points, vals, test_size=0.2, random_state=42
     )
-    print(pd.isna(X_train).sum())
-    print(pd.isna(y_train).sum())
 
     # Find best params
     param_grid = {"n_neighbors": [5, 8, 10], "p": [1, 1.5, 2]}
@@ -259,8 +254,6 @@ def map_scores_to_lsoa(xmin, ymax, scores_reshaped):
     lsoa_coords.plot(column="deciles", ax=ax, legend=True)
     plt.title("Loneliness Decile by lsoa - 5 values missing")
     plt.show()
-
-    print("lsoas without score do not have GP postcodes within its boundary.")
 
     return lsoa_coords
 
