@@ -287,7 +287,7 @@ if __name__ == "__main__":
         venv_name = os.path.basename(sys.prefix)
         print(f"You are in a virtual environment - {venv_name}")
     else:
-        print("You are not in a virtual environment. Activate your venev")
+        print("You are not in a virtual environment. Activate your venv")
 
     # Uncomment to test specific functions
 

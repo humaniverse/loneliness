@@ -285,7 +285,7 @@ if __name__ == "__main__":
         venv_name = os.path.basename(sys.prefix)
         print(f"You are in a virtual environment - {venv_name}")
     else:
-        print("You are not in a virtual environment. Activate your venev")
+        print("You are not in a virtual environment. Activate your venv")
 
     gp_geo = create_gp_coordinate_geoframe()
     best_params = find_best_params(gp_geo)

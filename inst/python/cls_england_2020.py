@@ -168,6 +168,13 @@ def map_lsoa11_lsoa21(df_lsoa11):
 
 if __name__ == "__main__":
     print("Running...")
+
+    if sys.base_prefix != sys.prefix:
+        venv_name = os.path.basename(sys.prefix)
+        print(f"You are in a virtual environment - {venv_name}")
+    else:
+        print("You are not in a virtual environment. Activate your venv")
+
     get_lookup_files()
     df = process_cls()
     df = map_oac11_oa11(df)
