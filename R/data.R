@@ -15,7 +15,7 @@
 #'   ...
 #' }
 #' @source \url{https://www.gov.uk/government/statistical-data-sets/dcms-community-life-survey-ad-hoc-statistical-releases}
-"england_cls_loneliness_2020"
+"england_cls_loneliness_lsoa"
 
 #' Northern Ireland Loneliness Scores from GP prescription data, 2022
 #'
@@ -49,7 +49,7 @@
 #'   ...
 #'  }
 #' @source \url{https://www.opendata.nhs.scot}
-"scotland_prescription_loneliness_2022"
+"scotland_clinical_loneliness_dz"
 
 #' Wales Loneliness Scores from GP prescription data, 2022
 #'

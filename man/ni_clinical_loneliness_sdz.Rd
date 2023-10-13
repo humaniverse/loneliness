@@ -8,6 +8,9 @@
 A data frame with 850 rows and 4 variables:
 \describe{
 \item{sdz21_code}{Super Data Zone Code}
+\item{loneliness_zscore}{Loneliness score}
+\item{rank}{Rank of loneliness score}
+\item{deciles}{Loneliness score deciled}
 ...
 }
 }
