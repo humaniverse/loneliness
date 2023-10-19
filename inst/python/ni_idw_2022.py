@@ -247,7 +247,9 @@ def map_scores_to_sdz(xmin, ymax, scores_reshaped):
 
     # Create rank and decile columns
     sdz_coords["rank"] = sdz_coords["loneliness_zscore"].rank()
-    sdz_coords["deciles"] = pd.qcut(sdz_coords["loneliness_zscore"], q=10, labels=False)
+    sdz_coords["deciles"] = pd.qcut(
+        sdz_coords["loneliness_zscore"], q=10, labels=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    )
 
     # Generate map of Scotland with decile colours to check
     decile_values = sdz_coords["deciles"].unique()
@@ -261,7 +263,7 @@ def map_scores_to_sdz(xmin, ymax, scores_reshaped):
         handles.append(Patch(facecolor=col, label=f"Decile {decile}"))
     fig, ax = plt.subplots(figsize=(5, 7))
     ax.axis("off")
-    sdz_coords.plot(column="deciles", ax=ax, legend=True)
+    sdz_coords.plot(column="deciles", ax=ax, cmap=cmap, legend=True)
     plt.title("Loneliness Decile by SDZ - 3 values missing")
     plt.show()
 

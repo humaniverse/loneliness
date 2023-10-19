@@ -33,22 +33,18 @@ def create_gp_coordinate_geoframe():
     Returns a geoframe gp_geo used in subsequent functions.
     """
     # Download NSPL into temp folder and select relevant columns
-    # print("Downloading NSPL...")
-    # response = requests.get(nspl_url)
-    # if response.status_code == 200:
-    #     with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_zip_file:
-    #         temp_zip_file.write(response.content)
-    #         temp_zip_file_path = temp_zip_file.name
-    #     with zipfile.ZipFile(temp_zip_file_path, "r") as zip_file:
-    #         with zip_file.open("Data/NSPL_MAY_2022_UK.csv") as csv_file:
-    #             nspl = pd.read_csv(csv_file, low_memory=False)
-    #     print("NSPL unzipped and downloaded to:", temp_zip_file_path)
-    # else:
-    #     print("NSPL failed to download.")
-
-    nspl = pd.read_csv(
-        "C:/Users/JennaTan/Downloads/NSPL_MAY_2022_UK.csv", low_memory=False
-    )
+    print("Downloading NSPL...")
+    response = requests.get(nspl_url)
+    if response.status_code == 200:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_zip_file:
+            temp_zip_file.write(response.content)
+            temp_zip_file_path = temp_zip_file.name
+        with zipfile.ZipFile(temp_zip_file_path, "r") as zip_file:
+            with zip_file.open("Data/NSPL_MAY_2022_UK.csv") as csv_file:
+                nspl = pd.read_csv(csv_file, low_memory=False)
+        print("NSPL unzipped and downloaded to:", temp_zip_file_path)
+    else:
+        print("NSPL failed to download.")
 
     nspl = nspl[["pcds", "oseast1m", "osnrth1m", "lsoa11", "msoa11"]]
     nspl["pcds"] = nspl.pcds.str.replace(" ", "")
@@ -69,13 +65,13 @@ def create_gp_coordinate_geoframe():
     print("gp_geo geodataframe created.")
 
     # Plot loneliness scores - check it is evenly distributed across Wales; note clusters around cities
-    # gp_geo.plot(
-    #     column="loneliness_zscore", scheme="quantiles", cmap="Blues", marker="."
-    # )
-    # plt.title(
-    #     "Loneliness score by GP - evenly distributed; cluster around cities. Dark = high loneliness."
-    # )
-    # plt.show()
+    gp_geo.plot(
+        column="loneliness_zscore", scheme="quantiles", cmap="Blues", marker="."
+    )
+    plt.title(
+        "Loneliness score by GP - evenly distributed; cluster around cities. Dark = high loneliness."
+    )
+    plt.show()
 
     return gp_geo
 
@@ -236,7 +232,7 @@ def map_scores_to_lsoa(xmin, ymax, scores_reshaped):
     # Create rank and decile columns
     lsoa_coords["rank"] = lsoa_coords["loneliness_zscore"].rank()
     lsoa_coords["deciles"] = pd.qcut(
-        lsoa_coords["loneliness_zscore"], q=10, labels=False
+        lsoa_coords["loneliness_zscore"], q=10, labels=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     )
 
     # Generate map of Scotland with decile colours to check
@@ -251,7 +247,7 @@ def map_scores_to_lsoa(xmin, ymax, scores_reshaped):
         handles.append(Patch(facecolor=col, label=f"Decile {decile}"))
     fig, ax = plt.subplots(figsize=(5, 7))
     ax.axis("off")
-    lsoa_coords.plot(column="deciles", ax=ax, legend=True)
+    lsoa_coords.plot(column="deciles", ax=ax, legend=True, cmap=cmap)
     plt.title("Loneliness Decile by lsoa - 5 values missing")
     plt.show()
 
