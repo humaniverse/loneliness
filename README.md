@@ -5,11 +5,12 @@
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- badges: end -->
-
-## Overview
 **Currently under active development**
 
-A loneliness prescription index for the UK. 
+## Overview
+A loneliness index for the UK. 
+
+The loneliness index scores, ranks and deciles each LSOA in each nation of the UK from most lonely to least lonely. In England the score is based on a self-reported survey (Community Life Survey). In Scotland, Wales and Northern Ireland the score is based on GP prescriptions associated with loneliness related conditions. Scores are comparable within nations but not between nations. 
 
 The code and approach for Scotland, Wales and Northern Ireland is based on [an approach developed by the Office for National Statistics' Data Science Campus](https://datasciencecampus.ons.gov.uk/developing-a-loneliness-prescription-index/), which uses GP prescription data to find areas with above-average prescriptions for conditions where loneliness has been shown to be a risk factor: Alzheimer's, depression, hyperternsion, diabetes, cardiovascular disease, anxiety, addiction and insomnia. 
 
