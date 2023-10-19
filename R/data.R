@@ -7,11 +7,13 @@
 #' responses of "Often/always & some of the time".
 #' ...
 #'
-#' @format A data frame with 33,755 rows and 2 variables:
+#' @format A data frame with 33,755 rows and 3 variables:
 #' \describe{
 #'   \item{lsoa21_code}{Lower Super Output Area 2021 Code}
 #'   \item{perc}{Percentage that respond "Often/always & some of the time" to
 #'   "How often do you feel lonely?"}
+#'   \item{deciles}{Percentage that respond "Often/always & some of the time" to
+#'   "How often do you feel lonely?" deciled. 1 is least lonely, 10 is most lonely}
 #'   ...
 #' }
 #' @source \url{https://www.gov.uk/government/statistical-data-sets/dcms-community-life-survey-ad-hoc-statistical-releases}
@@ -28,7 +30,7 @@
 #'   \item{sdz21_code}{Super Data Zone Code}
 #'   \item{loneliness_zscore}{Loneliness score}
 #'   \item{rank}{Rank of loneliness score}
-#'   \item{deciles}{Loneliness score deciled}
+#'   \item{deciles}{Loneliness score deciled - 1 is least lonely, 10 is most lonely}
 #'  ...
 #' }
 #' @source \url{https://www.data.gov.uk}
@@ -45,7 +47,7 @@
 #'   \item{iz11_code}{Intermediate Zone Code}
 #'   \item{loneliness_zscore}{Loneliness score}
 #'   \item{rank}{Rank of loneliness score}
-#'   \item{deciles}{Loneliness score deciled}
+#'   \item{deciles}{Loneliness score deciled - 1 is least lonely, 10 is most lonely}
 #'   ...
 #'  }
 #' @source \url{https://www.opendata.nhs.scot}
@@ -62,7 +64,7 @@
 #'   \item{lsoa21_code}{Lower Super Output Area Code}
 #'   \item{loneliness_zscore}{Loneliness score}
 #'   \item{rank}{Rank of loneliness score}
-#'   \item{deciles}{Loneliness score deciled}
+#'   \item{deciles}{Loneliness score deciled - 1 is least lonely, 10 is most lonely}
 #'   ...
 #'  }
 #' @source \url{https://nwssp.nhs.wales/}

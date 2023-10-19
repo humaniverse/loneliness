@@ -163,6 +163,11 @@ def map_lsoa11_lsoa21(df_lsoa11):
     print(
         f"LSOA11 mapped to LSOA21. Are there 33,755 LSOAs (2021)? {len(loneliness) == 33755}"
     )
+
+    loneliness["deciles"] = pd.qcut(
+        loneliness["perc"], q=10, labels=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    )
+
     loneliness.to_csv("inst/extdata/england_cls_loneliness_lsoa.csv", index=False)
     print("Dataset saved inst/extdata/england_cls_loneliness_lsoa.csv")
 

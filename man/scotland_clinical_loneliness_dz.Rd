@@ -10,7 +10,7 @@ A data frame with 1,279 rows and 4 variables:
 \item{iz11_code}{Intermediate Zone Code}
 \item{loneliness_zscore}{Loneliness score}
 \item{rank}{Rank of loneliness score}
-\item{deciles}{Loneliness score deciled}
+\item{deciles}{Loneliness score deciled - 1 is least lonely, 10 is most lonely}
 ...
 }
 }

@@ -241,7 +241,9 @@ def map_scores_to_dz(xmin, ymax, scores_reshaped):
 
     # Create rank and decile columns
     dz_coords["rank"] = dz_coords["loneliness_zscore"].rank()
-    dz_coords["deciles"] = pd.qcut(dz_coords["loneliness_zscore"], q=10, labels=False)
+    dz_coords["deciles"] = pd.qcut(
+        dz_coords["loneliness_zscore"], q=10, labels=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    )
 
     # Generate map of Scotland with decile colours to check
     decile_values = dz_coords["deciles"].unique()
@@ -256,7 +258,7 @@ def map_scores_to_dz(xmin, ymax, scores_reshaped):
         handles.append(Patch(facecolor=col, label=f"Decile {decile}"))
     fig, ax = plt.subplots(figsize=(5, 7))
     ax.axis("off")
-    dz_coords.plot(column="deciles", ax=ax, legend=True)
+    dz_coords.plot(column="deciles", ax=ax, cmap=cmap, legend=True)
     plt.title("Loneliness Decile by dz")
     plt.show()
 
