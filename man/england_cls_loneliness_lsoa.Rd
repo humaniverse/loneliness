@@ -5,11 +5,13 @@
 \alias{england_cls_loneliness_lsoa}
 \title{England Loneliness Scores from Community Life Survey 2020-21}
 \format{
-A data frame with 33,755 rows and 2 variables:
+A data frame with 33,755 rows and 3 variables:
 \describe{
 \item{lsoa21_code}{Lower Super Output Area 2021 Code}
 \item{perc}{Percentage that respond "Often/always & some of the time" to
 "How often do you feel lonely?"}
+\item{deciles}{Percentage that respond "Often/always & some of the time" to
+"How often do you feel lonely?" deciled. 1 is least lonely, 10 is most lonely}
 ...
 }
 }
