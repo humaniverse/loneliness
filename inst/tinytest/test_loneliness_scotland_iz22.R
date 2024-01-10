@@ -1,52 +1,54 @@
-# pkgload::load_all(".")
+library(tinytest)
+library(tidyverse)
+pkgload::load_all(".")
 
-# Use dummy dataset for now; to be changed when actual data is pushed
-data(dummy_loneliness_scotland_iz22)
-scotland_iz_codes_path <- system.file("extdata", "scotland_iz_codes.csv", package = "loneliness", mustWork = TRUE)
-scotland_iz_codes <- read.csv(scotland_iz_codes_path)
+# Load files
+data(scotland_clinical_loneliness_dz)
+scotland_dz_codes_path <- system.file("extdata", "test", "scotland_dz11_codes.csv", package = "loneliness", mustWork = TRUE)
+scotland_dz_codes <- read.csv(scotland_dz_codes_path)
 
 
 # ---- Tests: Overall dataframe ----
-# Test its class as a tibble data frame
+# Test it is a dataframe
 expect_equal(
-  class(dummy_loneliness_scotland_iz22)[1],
-  "tbl_df"
+  class(scotland_clinical_loneliness_dz)[1],
+  "data.frame"
 )
 
-# Test its dimensions: 1279 interzones, and 4 columns
+# Test shape of dataframe - 6,976 DZs, 4 columns
 expect_equal(
-  dim(dummy_loneliness_scotland_iz22),
-  c(1279, 4)
+  dim(scotland_clinical_loneliness_dz),
+  c(6976, 4)
 )
 
-# ---- Tests: Interzone ----
+# ---- Test DataZones ----
 # Test class
 expect_equal(
-  class(dummy_loneliness_scotland_iz22$iz_code11),
+  class(scotland_clinical_loneliness_dz$dz11_code),
   "character"
 )
 
-# Test all Interzone codes are there
+# Test all DZ codes are present
 expect_equal(
-  sort(dummy_loneliness_scotland_iz22$iz_code11),
-  sort(scotland_iz_codes$iz11_code)
+  sort(scotland_clinical_loneliness_dz$dz11_code),
+  sort(scotland_dz_codes$dz11_code)
 )
 
 # ---- Tests: Loneliness z-score ----
 # Test class
 expect_equal(
-  class(dummy_loneliness_scotland_iz22$loneliness_zscore),
+  class(scotland_clinical_loneliness_dz$loneliness_zscore),
   "numeric"
 )
 
 # Test all values fall within threshold of sd's (TBD)
-mean_loneliness <- mean(dummy_loneliness_scotland_iz22$loneliness_zscore, na.rm = TRUE)
-threshold <- 4 * sd(dummy_loneliness_scotland_iz22$loneliness_zscore, na.rm = TRUE)
+mean_loneliness <- mean(scotland_clinical_loneliness_dz$loneliness_zscore, na.rm = TRUE)
+threshold <- 4 * sd(scotland_clinical_loneliness_dz$loneliness_zscore, na.rm = TRUE)
 
 all_within_threshold <-
   all(
-    dummy_loneliness_scotland_iz22$loneliness_zscore >= mean_loneliness - threshold &
-      dummy_loneliness_scotland_iz22$loneliness_zscore <= mean_loneliness + threshold
+    scotland_clinical_loneliness_dz$loneliness_zscore >= mean_loneliness - threshold &
+      scotland_clinical_loneliness_dz$loneliness_zscore <= mean_loneliness + threshold
   )
 
 expect_true(all_within_threshold)
@@ -54,16 +56,16 @@ expect_true(all_within_threshold)
 # ---- Tests: Rank ----
 # Test class
 expect_equal(
-  class(dummy_loneliness_scotland_iz22$rank),
+  class(scotland_clinical_loneliness_dz$rank),
   "numeric"
 )
 
 # Compute ranks with same tie handling method to test actual ranks
 expected_ranks <-
-  rank(dummy_loneliness_scotland_iz22$loneliness_zscore, ties.method = "average")
+  rank(scotland_clinical_loneliness_dz$loneliness_zscore, ties.method = "average")
 
 expect_equal(
-  dummy_loneliness_scotland_iz22$rank,
+  scotland_clinical_loneliness_dz$rank,
   expected_ranks
 )
 
