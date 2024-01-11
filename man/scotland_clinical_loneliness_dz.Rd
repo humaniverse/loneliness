@@ -5,9 +5,9 @@
 \alias{scotland_clinical_loneliness_dz}
 \title{Scotland Loneliness Scores from GP prescription data, 2022}
 \format{
-A data frame with 1,279 rows and 4 variables:
+A data frame with 6,976 rows and 4 variables:
 \describe{
-\item{iz11_code}{Intermediate Zone Code}
+\item{dz11_code}{Intermediate Zone Code}
 \item{loneliness_zscore}{Loneliness score}
 \item{rank}{Rank of loneliness score}
 \item{deciles}{Loneliness score deciled - 1 is least lonely, 10 is most lonely}
@@ -21,8 +21,10 @@ A data frame with 1,279 rows and 4 variables:
 scotland_clinical_loneliness_dz
 }
 \description{
-A dataset with scores for loneliness at IZ level based on GP prescription data.
+A dataset with scores for loneliness at DZ level based on GP prescription data.
 The approach and code to develop this index is based on the
 Office for National Statistics' Data Science Campus Loneliness Prescription Index.
+Data is not available for 172 DataZones (2\% of total DataZones) due to lack of
+proximity to GPs. Their scores are marked as NA.
 }
 \keyword{datasets}

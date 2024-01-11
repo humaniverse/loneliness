@@ -24,6 +24,8 @@
 #' A dataset with scores for loneliness at SDZ level based on GP prescription data.
 #' The approach and code to develop this index is based on the 
 #' Office for National Statistics' Data Science Campus Loneliness Prescription Index.
+#' Data is not available for 3 SDZ due to lack of proximity to GPs. 
+#' Their scores are marked as NA.
 #'
 #' @format A data frame with 850 rows and 4 variables:
 #' \describe{
@@ -38,13 +40,15 @@
 
 #' Scotland Loneliness Scores from GP prescription data, 2022
 #'
-#' A dataset with scores for loneliness at IZ level based on GP prescription data.
+#' A dataset with scores for loneliness at DZ level based on GP prescription data.
 #' The approach and code to develop this index is based on the 
 #' Office for National Statistics' Data Science Campus Loneliness Prescription Index.
+#' Data is not available for 172 DataZones (2% of total DataZones) due to lack of
+#' proximity to GPs. Their scores are marked as NA.
 #'
-#' @format A data frame with 1,279 rows and 4 variables:
+#' @format A data frame with 6,976 rows and 4 variables:
 #' \describe{
-#'   \item{iz11_code}{Intermediate Zone Code}
+#'   \item{dz11_code}{Intermediate Zone Code}
 #'   \item{loneliness_zscore}{Loneliness score}
 #'   \item{rank}{Rank of loneliness score}
 #'   \item{deciles}{Loneliness score deciled - 1 is least lonely, 10 is most lonely}
@@ -58,6 +62,8 @@
 #' A dataset with scores for loneliness at LSOA level based on GP prescription data.
 #' The approach and code to develop this index is based on the 
 #' Office for National Statistics' Data Science Campus Loneliness Prescription Index.
+#' Data is not available for 9 LSOAs due to lack of proximity to GPs. 
+#' Their scores are marked as NA.
 #'
 #' @format A data frame with 1,917 rows and 4 variables:
 #' \describe{

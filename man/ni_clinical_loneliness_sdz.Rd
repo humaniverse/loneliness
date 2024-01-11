@@ -24,5 +24,7 @@ ni_clinical_loneliness_sdz
 A dataset with scores for loneliness at SDZ level based on GP prescription data.
 The approach and code to develop this index is based on the
 Office for National Statistics' Data Science Campus Loneliness Prescription Index.
+Data is not available for 3 SDZ due to lack of proximity to GPs.
+Their scores are marked as NA.
 }
 \keyword{datasets}
