@@ -48,9 +48,9 @@ To create and activate the virtual environment using Python's inbuilt `venv` mod
   - `deactivate`
 
 ### Testing
-`tinytests` is used for testing the datasets and `devtools::check()` for package testing. To run tests:
+`tinytest` is used for testing the datasets and `devtools::check()` for package testing. To run tests:
 * Load the package `pkgload::load_all(".")`
-* Run `tinytests::test_all()` to check for errors in the datasets
+* Run `tinytest::test_all()` to check for errors in the datasets
 * Run `devtools::check()` to check for errors/warnings/notes.
 
 ## Drug List
